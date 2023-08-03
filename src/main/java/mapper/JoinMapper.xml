@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="model.JoinImpl">
+
+	 <!-- 아이디 중복체크 -->
+	 <select id="idcheck" resultType="int" parameterType="String">
+		SELECT COUNT(*) FROM insa WHERE id = #{id}
+	 </select>
+	 
+	 <!-- 사원정보 등록하기 -->
+	 <insert id="write" parameterType="model.JoinVO" >
+		  
+	 	INSERT INTO insa (
+					sabun, join_day, retire_day, put_yn, name, reg_no, eng_name, phone, hp, join_yn,
+				    pos_gbn_code, cmp_reg_no, sex, years, email1, email2, zip, addr1, addr2, dept_code,
+				    join_gbn_code, id, pwd, salary, kosa_reg_yn, kosa_class_code, mil_yn, mil_type, mil_level, mil_startdate,
+				    mil_enddate, gart_level, self_intro, crm_name, profile, cmp_reg_image, carrier, 
+				    profile_oriname, cmp_reg_image_oriname, carrier_oriname) 
+		VALUES (
+				insa_seq.NEXTVAL, #{join_day}, #{retire_day}, #{put_yn},
+				#{name}, #{reg_no}, #{eng_name}, #{phone}, #{hp}, #{join_yn}, 
+				#{pos_gbn_code}, #{cmp_reg_no}, #{sex},
+				#{years}, #{email1}, #{email2}, #{zip} , #{addr1},
+				#{addr2}, #{dept_code}, #{join_gbn_code}, #{id},
+				#{pwd}, #{salary}, #{kosa_reg_yn}, #{kosa_class_code},
+				#{mil_yn}, #{mil_type}, #{mil_level}, #{mil_startdate},
+				#{mil_enddate}, #{gart_level}, #{self_intro}, #{crm_name}, 
+				#{profile_name, jdbcType=VARCHAR}, #{cmp_reg_image_name, jdbcType=VARCHAR}, #{carrier_name, jdbcType=VARCHAR},
+				#{profile_oriname, jdbcType=VARCHAR}, #{cmp_reg_image_oriname, jdbcType=VARCHAR}, #{carrier_oriname, jdbcType=VARCHAR})
+	 </insert>
+
+	<!-- 공통테이블 이용하기 -->
+	<select id="selectbox" resultType="model.InsaComVO">
+		SELECT * FROM insa_com 
+	</select>
+	
+	<!-- 페이지 불러오기 -->
+	<select id="getTotalCount" resultType="int" parameterType="model.ParameterVO">
+		SELECT COUNT(*) FROM insa WHERE 1=1
+	    <if test="sabun != null and sabun != ''">
+	    	AND sabun LIKE #{sabun}
+	    </if>
+	    <if test="pos_gbn_code != null and pos_gbn_code != ''">
+	    	AND pos_gbn_code LIKE #{pos_gbn_code}
+	    </if>
+	    <if test="name != null and name != ''">
+	    	AND name LIKE #{name}
+	    </if>
+	    <if test="join_day != null and join_day != ''">
+	    	AND join_day LIKE #{join_day}
+	    </if>
+	    <if test="join_yn != null and join_yn != ''">
+	    	AND join_yn LIKE #{join_yn}
+	    </if>
+	    <if test="retire_day != null and retire_day != ''">
+	    	AND retire_day LIKE #{retire_day}
+	    </if>
+	    <if test="put_yn != null and put_yn != ''">
+	    	AND put_yn LIKE #{put_yn}
+	    </if>
+	    <if test="join_gbn_code != null and join_gbn_code != ''">
+	    	AND join_gbn_code LIKE #{join_gbn_code}
+	    </if>
+	</select>
+	
+	<!-- 검색하기 -->
+	<select id="listPage" resultType="model.InsaVO" parameterType="model.ParameterVO">
+		SELECT 
+		sabun, name, reg_no, hp, pos_gbn_code, join_day, retire_day, put_yn, salary   
+		FROM (
+			SELECT Tb.*, rownum rNum FROM (
+				SELECT * FROM insa WHERE 1=1
+				<if test="sabun != null and sabun != ''">
+			    	AND sabun LIKE #{sabun}
+			    </if>
+			    <if test="pos_gbn_code != null and pos_gbn_code != ''">
+			    	AND pos_gbn_code LIKE #{pos_gbn_code}
+			    </if>
+			    <if test="name != null and name != ''">
+			    	AND name LIKE #{name}
+			    </if>
+			    <if test="join_day != null and join_day != ''">
+			    	AND join_day LIKE #{join_day}
+			    </if>
+			    <if test="join_yn != null and join_yn != ''">
+			    	AND join_yn LIKE #{join_yn}
+			    </if>
+			    <if test="retire_day != null and retire_day != ''">
+			    	AND retire_day LIKE #{retire_day}
+			    </if>
+			    <if test="put_yn != null and put_yn != ''">
+			    	AND put_yn LIKE #{put_yn}
+			    </if>
+			    <if test="join_gbn_code != null and join_gbn_code != ''">
+			    	AND join_gbn_code LIKE #{join_gbn_code}
+			    </if>
+				ORDER BY sabun DESC) Tb) WHERE rNum BETWEEN #{start} AND #{end}
+	</select>
+
+	<!-- <select id="select" resultType="model.UpdateVO" parameterType="model.ParameterVO">
+		SELECT * FROM insa WHERE sabun = #{sabun}
+	</select> -->
+	
+	<!-- 사원정보 불러오기 -->
+	<select id="select" resultType="model.JoinVO" parameterType="model.ParameterVO">
+		SELECT * FROM insa WHERE sabun = #{sabun}
+	</select>
+	
+	<!-- 사원정보 불러오기 -->
+	<select id="selectU" resultType="model.UpdateVO" parameterType="model.ParameterVO">
+		SELECT * FROM insa WHERE sabun = #{sabun}
+	</select>
+	
+	<!-- 수정하기 -->
+	<update id="update" parameterType="model.JoinVO">
+		UPDATE insa SET  
+						 join_day = #{join_day , jdbcType=VARCHAR},
+						 retire_day = #{retire_day , jdbcType=VARCHAR}, 
+						 put_yn = #{put_yn , jdbcType=VARCHAR}, 
+						 name = #{name , jdbcType=VARCHAR}, 
+						 reg_no = #{reg_no , jdbcType=VARCHAR}, 
+						 eng_name = #{eng_name , jdbcType=VARCHAR}, 
+						 phone = #{phone , jdbcType=VARCHAR}, 
+						 hp = #{hp , jdbcType=VARCHAR}, 
+						 join_yn = #{join_yn , jdbcType=VARCHAR},
+						 pos_gbn_code = #{pos_gbn_code , jdbcType=VARCHAR}, 
+						 cmp_reg_no = #{cmp_reg_no , jdbcType=VARCHAR}, 
+						 sex = #{sex , jdbcType=VARCHAR}, 
+						 years = #{years, jdbcType=VARCHAR}, 
+						 email1 = #{email1 , jdbcType=VARCHAR}, 
+						 email2 = #{email2 , jdbcType=VARCHAR}, 
+						 zip = #{zip, jdbcType=VARCHAR}, 
+						 addr1 = #{addr1 , jdbcType=VARCHAR}, 
+						 addr2 = #{addr2 , jdbcType=VARCHAR}, 
+						 dept_code = #{dept_code , jdbcType=VARCHAR},
+						 join_gbn_code = #{join_gbn_code , jdbcType=VARCHAR},
+						 pwd = #{pwd , jdbcType=VARCHAR}, 
+						 salary = #{salary, jdbcType=VARCHAR}, 
+						 kosa_reg_yn = #{kosa_reg_yn , jdbcType=VARCHAR}, 
+						 kosa_class_code = #{kosa_class_code , jdbcType=VARCHAR}, 
+						 mil_yn = #{mil_yn , jdbcType=VARCHAR}, 
+						 mil_type = #{mil_type , jdbcType=VARCHAR}, 
+						 mil_level = #{mil_level , jdbcType=VARCHAR}, 
+						 mil_startdate = #{mil_startdate , jdbcType=VARCHAR},
+						 mil_enddate = #{mil_enddate , jdbcType=VARCHAR}, 
+						 gart_level = #{gart_level , jdbcType=VARCHAR}, 
+						 self_intro = #{self_intro , jdbcType=VARCHAR}, 
+						 crm_name = #{crm_name , jdbcType=VARCHAR} 
+						 	, profile = #{profile_name, jdbcType=VARCHAR},
+						 	profile_oriname = #{profile_oriname, jdbcType=VARCHAR}
+						 	, cmp_reg_image = #{cmp_reg_image_name, jdbcType=VARCHAR},
+						 	cmp_reg_image_oriname = #{cmp_reg_image_oriname, jdbcType=VARCHAR}
+						 	, carrier = #{carrier_name, jdbcType=VARCHAR},
+						 	 carrier_oriname = #{carrier_oriname, jdbcType=VARCHAR}
+		WHERE sabun = #{sabun} 
+	</update>
+	
+	<!-- 삭제하기 -->
+	<delete id="delete" parameterType="model.ParameterVO" >
+	 	DELETE FROM insa WHERE sabun=#{sabun}
+	</delete>
+</mapper> 
